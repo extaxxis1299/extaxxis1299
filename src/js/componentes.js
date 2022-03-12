@@ -1,6 +1,6 @@
 import { Todo } from "../classes";
-import { todolist } from "../index";
-
+import { todoList } from "../index";
+//Referencia HTML
 const divTodoList = document.querySelector('.todo-list');
 const txtInput = document.querySelector('.new-todo');
 const btnBorrar = document.querySelector('.clear-completed');
@@ -8,18 +8,17 @@ const ulFiltros = document.querySelector('.filters');
 const anchorFiltros = document.querySelectorAll('.filtro');
 
 export const crearTodoHtml= (todo) =>{
-    const htmlTodo = `
+    const htmlTodo =`
     <li class="${ (todo.completado) ? 'completed': ''}" data-id="${todo.id}">
-        <div class="view">
-             <input class= "toggle" type="checkbox" ${ (todo.completado) ? 'checked': ''}>
-             <label>${todo.tarea}</label>
-             <button class="destroy"></button>
-        </div>
-        <input class="edit" value="Create a todoMVC template">
-    </li> 
+		<div class="view">
+			<input class="toggle" type="checkbox" ${ (todo.completado) ? 'checked': ''}>
+			<label>${todo.tarea}</label>
+			<button class="destroy"></button>
+		</div>
+		<input class="edit" value="Create a TodoMVC template">
+	</li>
     `;
-    
-    
+
     const div = document.createElement('div');
     div.innerHTML = htmlTodo;
     divTodoList.append(div.firstElementChild);
@@ -27,42 +26,45 @@ export const crearTodoHtml= (todo) =>{
     return div.firstElementChild;
 }
 
-txtInput.addEventListener('Keyup'), (evento)=>{
+
+// Eventos 
+txtInput.addEventListener('keyup', (evento)=>{
     //keycode 13 es un enter, se valida que no este vacio
     if(evento.keyCode===13 && txtInput.value.length>0){
         const nuevoTodo = new Todo(txtInput.value);
         todoList.nuevoTodo(nuevoTodo);
 
+        //No Me permite agregar una tarea
         crearTodoHtml(nuevoTodo);
         txtInput.value='';
     }
-
-
+});
 divTodoList.addEventListener('click', (evento)=>{
-
+    //obtiene un input, button o label
     const nombreElemento = evento.target.localName;
-    const todoElementos = evento.target.parentElement.parentElement;
+    const todoElemento = evento.target.parentElement.parentElement;
     const todoId = todoElemento.getAttribute('data-id');
 
-    if (nombreElemto.includes('input')){
-        todoList.marcarCompleto(todoId);
-        todoElementos.classList.toggle('completed');
-    }
-    else if (nombreElemento.includes('input')){
+    if (nombreElemento.includes('input')){
+        todoList.marcarCompletado(todoId);
+        todoElemento.classList.toggle('completed');
+    } else if (nombreElemento.includes('button')){
         todoList.eliminarTodo(todoId);
-        divTodoList.removeChild(todoElemento); //lo borra de HTML
+        divTodoList.removeChild(todoElemento); //lo borra de html
     }
+
+})
 
 btnBorrar.addEventListener('click', ()=>{
 
-    todolist.eliminarCompletados();
-    for (lef i = divTodoList.children.length-1; i>=0; i--){
+    todoList.eliminarCompletados();
+    for (let i = divTodoList.children.length-1; i>=0; i--){
         const elemento = divTodoList.children[i];
-        if(elemento.classList.constains('completed')){
+        if(elemento.classList.contains('completed')){
             divTodoList.removeChild(elemento);
         }
-        
     }
+});
 
 ulFiltros.addEventListener('click', (evento)=>{
 
@@ -73,17 +75,21 @@ ulFiltros.addEventListener('click', (evento)=>{
     evento.target.classList.add('selected');
 
     for(const elemento of divTodoList.children){
-        // el hidden viene del css
+        //el hidden viene del css
         elemento.classList.remove('hidden');
         const completado = elemento.classList.contains('completed');
-           
-        switch (filtro){
-            case 'pendientes':
-                if(!completado){
-                     elemento.classList.add('hidden');
+
+        switch (filtro) {
+            case 'Pendientes':
+                if(completado){
+                    elemento.classList.add('hidden');
                 }
-            break;
+                break;
+                case 'Completados':
+                    if(!completado){
+                        elemento.classList.add('hidden');
+                    }
+                break;
         }
-    }      
-      
+    }
 });
